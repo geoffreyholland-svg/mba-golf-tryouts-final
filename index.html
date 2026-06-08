@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBA Golf Tryouts 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cardinal:#9B1B30;--cardinal-mid:#7d1526;--cardinal-dark:#5c0f1c;
+  --gold:#c9a84c;--gold-light:#e8c87a;
+  --cream:#f8f5ee;--white:#ffffff;--gray-light:#f0ede6;--text:#1c1a17;--text-muted:#6b6760;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh}
+header{background:var(--cardinal);padding:2rem 2rem 1.5rem;text-align:center}
+header h1{font-family:'Playfair Display',serif;font-size:2.2rem;color:#fff;font-weight:700}
+header p{color:var(--gold-light);font-size:0.9rem;font-weight:300;margin-top:0.25rem;letter-spacing:1px;text-transform:uppercase}
+.round-tabs{display:flex;background:var(--cardinal-mid);border-bottom:2px solid var(--gold);overflow-x:auto}
+.round-tab{background:none;border:none;color:rgba(255,255,255,0.65);padding:0.8rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:400;cursor:pointer;white-space:nowrap;transition:all 0.2s;position:relative;flex-shrink:0}
+.round-tab.active{color:#fff;font-weight:500}
+.round-tab.active::after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:2px;background:var(--gold)}
+.round-tab:hover{color:#fff;background:rgba(255,255,255,0.07)}
+.section-tabs{display:flex;background:#f4f1ea;border-bottom:1px solid #ddd8cc}
+.sec-btn{background:none;border:none;padding:0.75rem 1.4rem;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--text-muted);cursor:pointer;position:relative;transition:all 0.2s;display:flex;align-items:center;gap:6px}
+.sec-btn.active{color:var(--cardinal);font-weight:500}
+.sec-btn.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold)}
+.sec-btn:hover{color:var(--cardinal)}
+main{max-width:860px;margin:0 auto;padding:1.75rem 1rem}
+.section-head h2{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:500;color:var(--cardinal)}
+.section-head p{color:var(--text-muted);font-size:0.875rem;margin-top:0.2rem}
+.divider{width:40px;height:2px;background:var(--gold);margin:0.4rem 0 0.9rem}
+.tee-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:1rem}
+.tee-card{background:#fff;border:0.5px solid #d5d0c7;border-radius:10px;padding:1rem 1.1rem;position:relative;overflow:hidden}
+.tee-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--gold)}
+.tee-card .time{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--cardinal);font-weight:500}
+.tee-card .hole{font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-top:0.8rem;font-weight:500}
+.tee-card .player{font-size:0.85rem;color:var(--text);padding:0.18rem 0;border-bottom:0.5px solid var(--gray-light);display:flex;align-items:center;gap:6px}
+.tee-card .player:last-child{border:none}
+.tee-card .player::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--cardinal);flex-shrink:0;opacity:0.45}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:12px;padding:1.6rem;width:90%;max-width:420px;max-height:90vh;overflow-y:auto}
+.modal h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--cardinal);margin-bottom:0.9rem}
+.modal label{font-size:0.78rem;color:var(--text-muted);font-weight:500;letter-spacing:0.3px;text-transform:uppercase;display:block;margin-bottom:0.25rem;margin-top:0.75rem}
+.modal input,.modal select{width:100%;padding:0.6rem 0.8rem;border:1px solid #ccc;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--text);background:#fff}
+.modal input:focus,.modal select:focus{outline:none;border-color:var(--cardinal-mid)}
+.modal-btns{display:flex;gap:0.75rem;margin-top:1.2rem}
+.btn{padding:0.55rem 1.2rem;border-radius:6px;border:none;font-family:'DM Sans',sans-serif;font-size:0.875rem;font-weight:500;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:var(--cardinal);color:#fff}
+.btn-primary:hover{background:var(--cardinal-mid)}
+.btn-secondary{background:var(--gray-light);color:var(--text-muted)}
+.btn-secondary:hover{background:#e0dbd3}
+.btn-gold{background:var(--gold);color:var(--cardinal-dark);font-weight:600}
+.btn-gold:hover{background:var(--gold-light)}
+.btn-sm{padding:0.35rem 0.7rem;font-size:0.78rem}
+.btn-danger{background:#fee2e2;color:#b91c1c}
+.btn-danger:hover{background:#fecaca}
+.tools-bar{display:flex;gap:0.75rem;margin-bottom:1.1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.info-badge{background:var(--cardinal);color:var(--gold-light);font-size:0.75rem;font-weight:500;padding:0.3rem 0.8rem;border-radius:20px}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-muted)}
+.empty-state svg{display:block;margin:0 auto 0.75rem;opacity:0.3;width:40px;height:40px}
+.score-input-row{display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;margin-top:0.65rem}
+.psi{display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.75rem;background:var(--gray-light);border-radius:6px}
+.psi span{font-size:0.85rem;font-weight:500;flex:1;margin-right:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.psi input{width:68px;padding:0.3rem 0.5rem;border:1px solid #ccc;border-radius:5px;font-size:0.9rem;text-align:center;font-family:'DM Sans',sans-serif;flex-shrink:0}
+.lb-wrap{background:#fff;border:0.5px solid #d5d0c7;border-radius:12px;overflow:hidden}
+.lb-head{display:grid;padding:0.65rem 1rem;background:var(--cardinal);color:rgba(255,255,255,0.75);font-size:0.72rem;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;gap:6px}
+.lb-row{display:grid;padding:0.85rem 1rem;border-bottom:0.5px solid var(--gray-light);align-items:center;gap:6px;transition:background 0.15s}
+.lb-row:last-child{border:none}
+.lb-row:hover{background:var(--gray-light)}
+.lb-row.leader{background:#fdf4f5}
+.pos{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--text-muted);text-align:center}
+.nm{font-weight:500;font-size:0.875rem}
+.sc{text-align:center;font-size:0.85rem;color:var(--text-muted)}
+.sc.total{font-weight:600;font-size:0.95rem;color:var(--cardinal)}
+.to-par{font-size:0.78rem;font-weight:500;border-radius:4px;padding:2px 6px;display:inline-block}
+.to-par.under{background:#dcfce7;color:#15803d}
+.to-par.over{background:#fee2e2;color:#b91c1c}
+.to-par.even{background:var(--gray-light);color:var(--text-muted)}
+.lock-screen{text-align:center;padding:3rem 1rem 2rem}
+.lock-icon{font-size:2.8rem;margin-bottom:0.75rem;display:block}
+.lock-screen h3{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--cardinal);margin-bottom:0.3rem}
+.lock-screen p{color:var(--text-muted);font-size:0.875rem;margin-bottom:1.5rem}
+.lock-form{display:flex;flex-direction:column;align-items:center;gap:0.75rem;max-width:270px;margin:0 auto}
+.lock-form input{width:100%;padding:0.65rem 1rem;border:1.5px solid #ccc;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:1rem;text-align:center;letter-spacing:3px}
+.lock-form input:focus{outline:none;border-color:var(--cardinal-mid)}
+.lock-error{color:#b91c1c;font-size:0.82rem;background:#fee2e2;padding:0.4rem 0.9rem;border-radius:6px;display:none}
+.lock-error.show{display:block}
+.session-bar{display:flex;align-items:center;justify-content:space-between;background:#fdf4f5;border:0.5px solid #f5c0c8;border-radius:8px;padding:0.6rem 1rem;margin-bottom:1.1rem}
+.session-bar span{font-size:0.83rem;color:var(--cardinal-dark);display:flex;align-items:center;gap:6px}
+.session-bar button{font-size:0.78rem;background:none;border:none;color:var(--text-muted);cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif}
+.pw-settings{background:#fff;border:0.5px solid #d5d0c7;border-radius:10px;padding:1rem 1.1rem;margin-bottom:1.5rem}
+.pw-settings summary{cursor:pointer;font-size:0.85rem;color:var(--text-muted);font-weight:500;list-style:none;display:flex;align-items:center;gap:6px}
+.pw-settings summary::-webkit-details-marker{display:none}
+.pw-inner{margin-top:0.85rem;display:grid;grid-template-columns:1fr auto;gap:0.65rem;align-items:end}
+.pw-inner label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;font-weight:500;display:block;margin-bottom:0.25rem}
+.pw-inner input{width:100%;padding:0.5rem 0.7rem;border:0.5px solid #ccc;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.875rem}
+.course-pill{display:inline-flex;align-items:center;gap:4px;background:#fdf4f5;color:var(--cardinal-dark);font-size:0.73rem;font-weight:500;padding:0.22rem 0.65rem;border-radius:20px;margin-bottom:0.8rem}
+.save-toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--cardinal);color:#fff;padding:0.6rem 1.1rem;border-radius:8px;font-size:0.85rem;font-weight:500;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:300}
+.save-toast.show{opacity:1}
+@media(max-width:600px){
+  header h1{font-size:1.6rem}
+  .round-tab{padding:0.65rem 0.85rem;font-size:0.78rem}
+  .sec-btn{padding:0.65rem 0.9rem;font-size:0.82rem}
+  .score-input-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="font-size:2rem;margin-bottom:0.4rem">⛳</div>
+  <h1>MBA Golf Tryouts</h1>
+  <p>June 15–17, 2026 &nbsp;·&nbsp; Coach Dashboard</p>
+</header>
+
+<div class="round-tabs">
+  <button class="round-tab active" onclick="switchRound(0)">Round 1 · Jun 15</button>
+  <button class="round-tab" onclick="switchRound(1)">Round 2 · Jun 16</button>
+  <button class="round-tab" onclick="switchRound(2)">Round 3 · Jun 17</button>
+  <button class="round-tab" onclick="switchRound(3)" style="border-left:1px solid rgba(255,255,255,0.15)">🏆 Overall</button>
+</div>
+
+<div class="section-tabs" id="sec-tabs">
+  <button class="sec-btn active" onclick="switchSection('tee')">🕐 Tee Times</button>
+  <button class="sec-btn" onclick="switchSection('scores')" id="score-tab-btn">🔒 Enter Scores</button>
+  <button class="sec-btn" onclick="switchSection('leaderboard')">📋 Leaderboard</button>
+</div>
+
+<main id="main-content"></main>
+
+<div class="modal-overlay" id="tee-modal">
+  <div class="modal">
+    <h3 id="modal-title">Add Tee Time</h3>
+    <label>Tee Time</label>
+    <input type="time" id="m-time" value="08:00">
+    <label>Starting Hole</label>
+    <select id="m-hole">
+      <option value="Hole 1">Hole 1</option>
+      <option value="Hole 10">Hole 10</option>
+    </select>
+    <label>Player 1</label><input type="text" id="m-p1" placeholder="Name">
+    <label>Player 2</label><input type="text" id="m-p2" placeholder="Name">
+    <label>Player 3</label><input type="text" id="m-p3" placeholder="Name">
+    <label>Player 4</label><input type="text" id="m-p4" placeholder="Name">
+    <div class="modal-btns">
+      <button class="btn btn-gold" onclick="saveTeeTime()">Save Group</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="save-toast" id="save-toast">Saved ✓</div>
+
+<script>
+const PAR = 72;
+const STORAGE_KEY = 'mba_golf_2026';
+const ROUNDS = [
+  { label: 'Round 1', date: 'June 15, 2026', course: 'Harpeth Hills' },
+  { label: 'Round 2', date: 'June 16, 2026', course: 'Harpeth Hills' },
+  { label: 'Round 3', date: 'June 17, 2026', course: 'Ted Rhodes' },
+];
+
+let roundData = [{ groups: [] }, { groups: [] }, { groups: [] }];
+let currentRound = 0;
+let currentSection = 'tee';
+let scoreUnlocked = false;
+let coachPassword = 'golf2026';
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.roundData) roundData = parsed.roundData;
+      if (parsed.coachPassword) coachPassword = parsed.coachPassword;
+    }
+  } catch(e) {}
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ roundData, coachPassword }));
+    showToast();
+  } catch(e) {}
+}
+
+function showToast() {
+  const t = document.getElementById('save-toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function san(s) { return s.replace(/[^a-zA-Z0-9]/g, '_'); }
+function fmt12(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':').map(Number);
+  return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
+}
+
+function switchRound(r) {
+  currentRound = r;
+  document.querySelectorAll('.round-tab').forEach((b, i) => b.classList.toggle('active', i === r));
+  const st = document.getElementById('sec-tabs');
+  st.style.display = r === 3 ? 'none' : 'flex';
+  if (r === 3) { currentSection = 'leaderboard'; renderOverall(); }
+  else render();
+}
+
+function switchSection(s) {
+  currentSection = s;
+  document.querySelectorAll('.sec-btn').forEach((b, i) => b.classList.toggle('active', ['tee', 'scores', 'leaderboard'][i] === s));
+  render();
+}
+
+function render() {
+  if (currentRound === 3) { renderOverall(); return; }
+  if (currentSection === 'tee') renderTee();
+  else if (currentSection === 'scores') renderScores();
+  else renderRoundLB();
+}
+
+function getRound() { return roundData[currentRound]; }
+function getGroups() { return getRound().groups; }
+
+function renderTee() {
+  const r = ROUNDS[currentRound];
+  const groups = getGroups().slice().sort((a, b) => a.time.localeCompare(b.time));
+  document.getElementById('main-content').innerHTML = `
+    <div class="section-head" style="margin-bottom:1.1rem">
+      <h2>Tee Times</h2>
+      <div class="divider"></div>
+      <div class="course-pill">📍 ${r.date} · ${r.course}</div>
+    </div>
+    <div class="tools-bar">
+      <span class="info-badge">${groups.length} group${groups.length !== 1 ? 's' : ''} scheduled</span>
+      <button class="btn btn-primary" onclick="openTeeModal()">+ Add Tee Time</button>
+    </div>
+    <div class="tee-grid">
+      ${groups.length ? groups.map(g => `
+        <div class="tee-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div class="time">${fmt12(g.time)}</div>
+            <button class="btn btn-danger btn-sm" onclick="deleteGroup(${g.id})" title="Delete group">✕</button>
+          </div>
+          <div class="hole">${g.hole}</div>
+          <div style="margin-top:0.4rem">${g.players.map(p => `<div class="player">${p}</div>`).join('')}</div>
+        </div>`).join('') : `
+        <div class="empty-state" style="grid-column:1/-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          No tee times yet. Add your first group above.
+        </div>`}
+    </div>`;
+}
+
+function renderScores() {
+  const el = document.getElementById('main-content');
+  const r = ROUNDS[currentRound];
+  const scoreTabBtn = document.getElementById('score-tab-btn');
+
+  if (!scoreUnlocked) {
+    if (scoreTabBtn) scoreTabBtn.textContent = '🔒 Enter Scores';
+    el.innerHTML = `
+      <div class="lock-screen">
+        <span class="lock-icon">🔒</span>
+        <h3>Score Entry — ${r.label}</h3>
+        <p>${r.date} · ${r.course}</p>
+        <div class="lock-form">
+          <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')tryUnlock()" autocomplete="current-password">
+          <div class="lock-error" id="pw-error">Incorrect password. Try again.</div>
+          <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="tryUnlock()">🔓 Unlock Score Entry</button>
+        </div>
+      </div>
+      <div class="pw-settings">
+        <details>
+          <summary>⚙️ Change password</summary>
+          <div class="pw-inner">
+            <div><label>New password</label><input type="password" id="new-pw" placeholder="New password" autocomplete="new-password"></div>
+            <button class="btn btn-primary btn-sm" onclick="changePassword()">Save</button>
+          </div>
+          <div id="pw-saved" style="font-size:0.78rem;color:#15803d;margin-top:0.4rem;display:none">✓ Password updated and saved.</div>
+        </details>
+      </div>`;
+    return;
+  }
+
+  if (scoreTabBtn) scoreTabBtn.textContent = '🔓 Enter Scores';
+  const groups = getGroups().slice().sort((a, b) => a.time.localeCompare(b.time));
+  el.innerHTML = `
+    <div class="section-head" style="margin-bottom:1rem">
+      <h2>Enter Scores — ${r.label}</h2>
+      <div class="divider"></div>
+      <div class="course-pill">📍 ${r.date} · ${r.course}</div>
+    </div>
+    <div class="session-bar">
+      <span>🔓 Unlocked as coach</span>
+      <button onclick="lockScores()">Lock &amp; sign out</button>
+    </div>
+    ${groups.length ? groups.map(g => `
+      <div style="background:#fff;border:0.5px solid #d5d0c7;border-radius:10px;padding:1rem 1.1rem;margin-bottom:0.9rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.65rem">
+          <div>
+            <span style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--cardinal);font-weight:500">${fmt12(g.time)}</span>
+            <span style="font-size:0.78rem;color:var(--text-muted);margin-left:8px">${g.hole}</span>
+          </div>
+          <button class="btn btn-gold btn-sm" onclick="saveScores(${g.id})">✓ Save</button>
+        </div>
+        <div class="score-input-row">
+          ${g.players.map(p => `
+            <div class="psi">
+              <span title="${p}">${p}</span>
+              <input type="number" id="sc-${currentRound}-${g.id}-${san(p)}" value="${g.scores[p] !== undefined ? g.scores[p] : ''}" placeholder="–" min="55" max="130" aria-label="${p} score">
+            </div>`).join('')}
+        </div>
+      </div>`).join('') : `<div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Add players on the Tee Times tab first.
+      </div>`}`;
+}
+
+function renderRoundLB() {
+  const r = ROUNDS[currentRound];
+  const all = [];
+  getGroups().forEach(g => g.players.forEach(p => {
+    if (g.scores[p] !== undefined) all.push({ name: p, score: g.scores[p], time: g.time });
+  }));
+  all.sort((a, b) => a.score - b.score);
+  const medals = ['🥇', '🥈', '🥉'];
+  const cols = '38px 1fr 75px 80px 80px';
+  document.getElementById('main-content').innerHTML = `
+    <div class="section-head" style="margin-bottom:1rem">
+      <h2>Leaderboard — ${r.label}</h2>
+      <div class="divider"></div>
+      <div class="course-pill">📍 ${r.date} · ${r.course}</div>
+    </div>
+    ${all.length ? `<div class="lb-wrap">
+      <div class="lb-head" style="grid-template-columns:${cols}">
+        <div>Pos</div><div>Player</div><div style="text-align:center">Score</div><div style="text-align:center">+/- Par</div><div style="text-align:center">Tee</div>
+      </div>
+      ${all.map((p, i) => {
+        const diff = p.score - PAR;
+        const ps = diff === 0 ? 'E' : diff > 0 ? '+' + diff : '' + diff;
+        const pc = diff < 0 ? 'under' : diff > 0 ? 'over' : 'even';
+        return `<div class="lb-row${i === 0 ? ' leader' : ''}" style="grid-template-columns:${cols}">
+          <div class="pos">${i < 3 ? medals[i] : i + 1}</div>
+          <div><div class="nm">${p.name}</div></div>
+          <div class="sc total">${p.score}</div>
+          <div style="text-align:center"><span class="to-par ${pc}">${ps}</span></div>
+          <div class="sc">${fmt12(p.time)}</div>
+        </div>`;
+      }).join('')}
+    </div>` : `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 21h8M12 17v4M5 3h14l-1 9a6 6 0 01-12 0L5 3z"/></svg>
+      No scores entered for this round yet.
+    </div>`}`;
+}
+
+function renderOverall() {
+  const players = {};
+  roundData.forEach((rd, ri) => {
+    rd.groups.forEach(g => {
+      g.players.forEach(p => {
+        if (!players[p]) players[p] = { name: p, rounds: [null, null, null] };
+        if (g.scores[p] !== undefined) players[p].rounds[ri] = g.scores[p];
+      });
+    });
+  });
+  const arr = Object.values(players).map(p => {
+    const played = p.rounds.filter(s => s !== null);
+    const total = played.length ? played.reduce((a, b) => a + b, 0) : null;
+    return { ...p, total, played: played.length };
+  }).filter(p => p.played > 0).sort((a, b) => (a.total ?? 9999) - (b.total ?? 9999));
+  const medals = ['🥇', '🥈', '🥉'];
+  const cols = '38px 1fr 60px 60px 60px 65px 75px';
+  document.getElementById('main-content').innerHTML = `
+    <div class="section-head" style="margin-bottom:1rem">
+      <h2>Overall Standings</h2>
+      <div class="divider"></div>
+      <p>Combined score across all completed rounds · Par 72 per round</p>
+    </div>
+    ${arr.length ? `<div class="lb-wrap">
+      <div class="lb-head" style="grid-template-columns:${cols}">
+        <div>Pos</div><div>Player</div>
+        <div style="text-align:center">R1</div><div style="text-align:center">R2</div><div style="text-align:center">R3</div>
+        <div style="text-align:center">Total</div><div style="text-align:center">+/- Par</div>
+      </div>
+      ${arr.map((p, i) => {
+        const played = p.rounds.filter(s => s !== null).length;
+        const diff = p.total !== null ? p.total - (played * PAR) : null;
+        const ps = diff === null ? '–' : diff === 0 ? 'E' : diff > 0 ? '+' + diff : '' + diff;
+        const pc = diff === null ? 'even' : diff < 0 ? 'under' : diff > 0 ? 'over' : 'even';
+        return `<div class="lb-row${i === 0 && p.played === 3 ? ' leader' : ''}" style="grid-template-columns:${cols}">
+          <div class="pos">${i < 3 ? medals[i] : i + 1}</div>
+          <div><div class="nm">${p.name}</div><div style="font-size:0.72rem;color:var(--text-muted)">${p.played}/3 rounds</div></div>
+          <div class="sc">${p.rounds[0] !== null ? p.rounds[0] : '<span style="color:#ccc">–</span>'}</div>
+          <div class="sc">${p.rounds[1] !== null ? p.rounds[1] : '<span style="color:#ccc">–</span>'}</div>
+          <div class="sc">${p.rounds[2] !== null ? p.rounds[2] : '<span style="color:#ccc">–</span>'}</div>
+          <div class="sc total">${p.total !== null ? p.total : '–'}</div>
+          <div style="text-align:center"><span class="to-par ${pc}">${ps}</span></div>
+        </div>`;
+      }).join('')}
+    </div>` : `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 21h8M12 17v4M5 3h14l-1 9a6 6 0 01-12 0L5 3z"/></svg>
+      Enter scores in each round to see overall standings.
+    </div>`}`;
+}
+
+function openTeeModal() {
+  document.getElementById('modal-title').textContent = `Add Tee Time — ${ROUNDS[currentRound].label}`;
+  ['p1', 'p2', 'p3', 'p4'].forEach(id => document.getElementById('m-' + id).value = '');
+  document.getElementById('tee-modal').classList.add('open');
+}
+function closeModal() { document.getElementById('tee-modal').classList.remove('open'); }
+
+function saveTeeTime() {
+  const time = document.getElementById('m-time').value;
+  const hole = document.getElementById('m-hole').value;
+  const players = ['p1', 'p2', 'p3', 'p4'].map(id => document.getElementById('m-' + id).value.trim()).filter(Boolean);
+  if (!time || !players.length) { alert('Please add a time and at least one player.'); return; }
+  getRound().groups.push({ id: Date.now(), time, hole, players, scores: {} });
+  saveData();
+  closeModal();
+  renderTee();
+}
+
+function deleteGroup(id) {
+  if (!confirm('Delete this tee time group?')) return;
+  getRound().groups = getRound().groups.filter(g => g.id !== id);
+  saveData();
+  render();
+}
+
+function tryUnlock() {
+  const v = document.getElementById('pw-input').value;
+  const err = document.getElementById('pw-error');
+  if (v === coachPassword) { scoreUnlocked = true; renderScores(); }
+  else {
+    err.classList.add('show');
+    document.getElementById('pw-input').value = '';
+    setTimeout(() => err.classList.remove('show'), 3000);
+  }
+}
+function lockScores() { scoreUnlocked = false; renderScores(); }
+
+function changePassword() {
+  const np = document.getElementById('new-pw');
+  if (!np || !np.value.trim()) return;
+  coachPassword = np.value.trim();
+  np.value = '';
+  saveData();
+  const s = document.getElementById('pw-saved');
+  s.style.display = 'block';
+  setTimeout(() => s.style.display = 'none', 2500);
+}
+
+function saveScores(id) {
+  const g = getRound().groups.find(gr => gr.id === id);
+  if (!g) return;
+  g.players.forEach(p => {
+    const el = document.getElementById(`sc-${currentRound}-${id}-${san(p)}`);
+    if (el && el.value !== '') g.scores[p] = parseInt(el.value);
+  });
+  saveData();
+  const btn = document.querySelector(`button[onclick="saveScores(${id})"]`);
+  if (btn) {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Saved!';
+    btn.style.background = '#dcfce7';
+    btn.style.color = '#15803d';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.color = ''; }, 1600);
+  }
+}
+
+// Close modal on backdrop click
+document.getElementById('tee-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+loadData();
+render();
+</script>
+</body>
+</html>
