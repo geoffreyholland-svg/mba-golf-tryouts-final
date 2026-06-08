@@ -56,6 +56,8 @@ main{max-width:860px;margin:0 auto;padding:1.75rem 1rem}
 .btn-sm{padding:0.35rem 0.7rem;font-size:0.78rem}
 .btn-danger{background:#fee2e2;color:#b91c1c}
 .btn-danger:hover{background:#fecaca}
+.btn-outline{background:none;border:1px solid #d5d0c7;color:var(--text-muted)}
+.btn-outline:hover{background:var(--gray-light);color:var(--cardinal)}
 .tools-bar{display:flex;gap:0.75rem;margin-bottom:1.1rem;flex-wrap:wrap;align-items:center;justify-content:space-between}
 .info-badge{background:var(--cardinal);color:var(--gold-light);font-size:0.75rem;font-weight:500;padding:0.3rem 0.8rem;border-radius:20px}
 .empty-state{text-align:center;padding:3rem 1rem;color:var(--text-muted)}
@@ -78,18 +80,24 @@ main{max-width:860px;margin:0 auto;padding:1.75rem 1rem}
 .to-par.under{background:#dcfce7;color:#15803d}
 .to-par.over{background:#fee2e2;color:#b91c1c}
 .to-par.even{background:var(--gray-light);color:var(--text-muted)}
-.lock-screen{text-align:center;padding:3rem 1rem 2rem}
-.lock-icon{font-size:2.8rem;margin-bottom:0.75rem;display:block}
-.lock-screen h3{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--cardinal);margin-bottom:0.3rem}
-.lock-screen p{color:var(--text-muted);font-size:0.875rem;margin-bottom:1.5rem}
-.lock-form{display:flex;flex-direction:column;align-items:center;gap:0.75rem;max-width:270px;margin:0 auto}
-.lock-form input{width:100%;padding:0.65rem 1rem;border:1.5px solid #ccc;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:1rem;text-align:center;letter-spacing:3px}
+.lock-screen{text-align:center;padding:2.5rem 1rem 1.5rem}
+.lock-icon{font-size:2.5rem;margin-bottom:0.65rem;display:block}
+.lock-screen h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--cardinal);margin-bottom:0.25rem}
+.lock-screen p{color:var(--text-muted);font-size:0.85rem;margin-bottom:1.25rem}
+.lock-form{display:flex;flex-direction:column;align-items:center;gap:0.65rem;max-width:260px;margin:0 auto}
+.lock-form input{width:100%;padding:0.6rem 1rem;border:1.5px solid #ccc;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:1rem;text-align:center;letter-spacing:3px}
 .lock-form input:focus{outline:none;border-color:var(--cardinal-mid)}
-.lock-error{color:#b91c1c;font-size:0.82rem;background:#fee2e2;padding:0.4rem 0.9rem;border-radius:6px;display:none}
+.lock-error{color:#b91c1c;font-size:0.82rem;background:#fee2e2;padding:0.35rem 0.8rem;border-radius:6px;display:none}
 .lock-error.show{display:block}
 .session-bar{display:flex;align-items:center;justify-content:space-between;background:#fdf4f5;border:0.5px solid #f5c0c8;border-radius:8px;padding:0.6rem 1rem;margin-bottom:1.1rem}
 .session-bar span{font-size:0.83rem;color:var(--cardinal-dark);display:flex;align-items:center;gap:6px}
 .session-bar button{font-size:0.78rem;background:none;border:none;color:var(--text-muted);cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif}
+.coach-inline{background:#fff;border:0.5px solid #d5d0c7;border-radius:10px;padding:1rem 1.1rem;margin-bottom:1.25rem}
+.coach-inline summary{cursor:pointer;font-size:0.85rem;color:var(--text-muted);font-weight:500;list-style:none;display:flex;align-items:center;gap:6px}
+.coach-inline summary::-webkit-details-marker{display:none}
+.coach-unlock-form{margin-top:0.85rem;display:flex;gap:0.65rem;align-items:center;flex-wrap:wrap}
+.coach-unlock-form input{flex:1;min-width:140px;padding:0.5rem 0.75rem;border:1px solid #ccc;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.875rem;letter-spacing:2px}
+.coach-unlock-form input:focus{outline:none;border-color:var(--cardinal-mid)}
 .pw-settings{background:#fff;border:0.5px solid #d5d0c7;border-radius:10px;padding:1rem 1.1rem;margin-bottom:1.5rem}
 .pw-settings summary{cursor:pointer;font-size:0.85rem;color:var(--text-muted);font-weight:500;list-style:none;display:flex;align-items:center;gap:6px}
 .pw-settings summary::-webkit-details-marker{display:none}
@@ -165,6 +173,7 @@ const ROUNDS = [
 let roundData = [{ groups: [] }, { groups: [] }, { groups: [] }];
 let currentRound = 0;
 let currentSection = 'tee';
+let teeUnlocked = false;
 let scoreUnlocked = false;
 let coachPassword = 'golf2026';
 
@@ -224,36 +233,69 @@ function render() {
 function getRound() { return roundData[currentRound]; }
 function getGroups() { return getRound().groups; }
 
+// ── Tee Times: always visible, coach controls gated ──────────────────────────
 function renderTee() {
   const r = ROUNDS[currentRound];
   const groups = getGroups().slice().sort((a, b) => a.time.localeCompare(b.time));
+
+  const coachControls = teeUnlocked
+    ? `<div class="session-bar">
+        <span>🔓 Coach mode — you can add &amp; delete groups</span>
+        <button onclick="lockTee()">Lock</button>
+       </div>
+       <div class="tools-bar">
+         <span class="info-badge">${groups.length} group${groups.length !== 1 ? 's' : ''} scheduled</span>
+         <button class="btn btn-primary" onclick="openTeeModal()">+ Add Tee Time</button>
+       </div>`
+    : `<div class="tools-bar" style="margin-bottom:0.5rem">
+        <span class="info-badge">${groups.length} group${groups.length !== 1 ? 's' : ''} scheduled</span>
+       </div>
+       <details class="coach-inline" style="margin-bottom:1.1rem">
+         <summary>🔒 Coach login to edit tee times</summary>
+         <div class="coach-unlock-form">
+           <input type="password" id="tee-pw" placeholder="Password" onkeydown="if(event.key==='Enter')tryUnlockTee()" autocomplete="current-password">
+           <button class="btn btn-gold btn-sm" onclick="tryUnlockTee()">Unlock</button>
+         </div>
+         <div class="lock-error" id="tee-pw-error" style="margin-top:0.5rem">Incorrect password.</div>
+       </details>`;
+
   document.getElementById('main-content').innerHTML = `
     <div class="section-head" style="margin-bottom:1.1rem">
       <h2>Tee Times</h2>
       <div class="divider"></div>
       <div class="course-pill">📍 ${r.date} · ${r.course}</div>
     </div>
-    <div class="tools-bar">
-      <span class="info-badge">${groups.length} group${groups.length !== 1 ? 's' : ''} scheduled</span>
-      <button class="btn btn-primary" onclick="openTeeModal()">+ Add Tee Time</button>
-    </div>
+    ${coachControls}
     <div class="tee-grid">
       ${groups.length ? groups.map(g => `
         <div class="tee-card">
           <div style="display:flex;justify-content:space-between;align-items:flex-start">
             <div class="time">${fmt12(g.time)}</div>
-            <button class="btn btn-danger btn-sm" onclick="deleteGroup(${g.id})" title="Delete group">✕</button>
+            ${teeUnlocked ? `<button class="btn btn-danger btn-sm" onclick="deleteGroup(${g.id})" title="Delete group">✕</button>` : ''}
           </div>
           <div class="hole">${g.hole}</div>
           <div style="margin-top:0.4rem">${g.players.map(p => `<div class="player">${p}</div>`).join('')}</div>
         </div>`).join('') : `
         <div class="empty-state" style="grid-column:1/-1">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          No tee times yet. Add your first group above.
+          No tee times posted yet.
         </div>`}
     </div>`;
 }
 
+function tryUnlockTee() {
+  const v = document.getElementById('tee-pw').value;
+  const err = document.getElementById('tee-pw-error');
+  if (v === coachPassword) { teeUnlocked = true; renderTee(); }
+  else {
+    err.classList.add('show');
+    document.getElementById('tee-pw').value = '';
+    setTimeout(() => err.classList.remove('show'), 3000);
+  }
+}
+function lockTee() { teeUnlocked = false; renderTee(); }
+
+// ── Score Entry: fully gated ──────────────────────────────────────────────────
 function renderScores() {
   const el = document.getElementById('main-content');
   const r = ROUNDS[currentRound];
@@ -265,11 +307,11 @@ function renderScores() {
       <div class="lock-screen">
         <span class="lock-icon">🔒</span>
         <h3>Score Entry — ${r.label}</h3>
-        <p>${r.date} · ${r.course}</p>
+        <p>${r.date} · ${r.course}<br>Coach access only.</p>
         <div class="lock-form">
-          <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')tryUnlock()" autocomplete="current-password">
+          <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')tryUnlockScore()" autocomplete="current-password">
           <div class="lock-error" id="pw-error">Incorrect password. Try again.</div>
-          <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="tryUnlock()">🔓 Unlock Score Entry</button>
+          <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="tryUnlockScore()">🔓 Unlock Score Entry</button>
         </div>
       </div>
       <div class="pw-settings">
@@ -319,6 +361,19 @@ function renderScores() {
       </div>`}`;
 }
 
+function tryUnlockScore() {
+  const v = document.getElementById('pw-input').value;
+  const err = document.getElementById('pw-error');
+  if (v === coachPassword) { scoreUnlocked = true; renderScores(); }
+  else {
+    err.classList.add('show');
+    document.getElementById('pw-input').value = '';
+    setTimeout(() => err.classList.remove('show'), 3000);
+  }
+}
+function lockScores() { scoreUnlocked = false; renderScores(); }
+
+// ── Leaderboards ──────────────────────────────────────────────────────────────
 function renderRoundLB() {
   const r = ROUNDS[currentRound];
   const all = [];
@@ -406,6 +461,7 @@ function renderOverall() {
     </div>`}`;
 }
 
+// ── Shared ────────────────────────────────────────────────────────────────────
 function openTeeModal() {
   document.getElementById('modal-title').textContent = `Add Tee Time — ${ROUNDS[currentRound].label}`;
   ['p1', 'p2', 'p3', 'p4'].forEach(id => document.getElementById('m-' + id).value = '');
@@ -428,20 +484,8 @@ function deleteGroup(id) {
   if (!confirm('Delete this tee time group?')) return;
   getRound().groups = getRound().groups.filter(g => g.id !== id);
   saveData();
-  render();
+  renderTee();
 }
-
-function tryUnlock() {
-  const v = document.getElementById('pw-input').value;
-  const err = document.getElementById('pw-error');
-  if (v === coachPassword) { scoreUnlocked = true; renderScores(); }
-  else {
-    err.classList.add('show');
-    document.getElementById('pw-input').value = '';
-    setTimeout(() => err.classList.remove('show'), 3000);
-  }
-}
-function lockScores() { scoreUnlocked = false; renderScores(); }
 
 function changePassword() {
   const np = document.getElementById('new-pw');
@@ -450,8 +494,7 @@ function changePassword() {
   np.value = '';
   saveData();
   const s = document.getElementById('pw-saved');
-  s.style.display = 'block';
-  setTimeout(() => s.style.display = 'none', 2500);
+  if (s) { s.style.display = 'block'; setTimeout(() => s.style.display = 'none', 2500); }
 }
 
 function saveScores(id) {
@@ -472,7 +515,6 @@ function saveScores(id) {
   }
 }
 
-// Close modal on backdrop click
 document.getElementById('tee-modal').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
